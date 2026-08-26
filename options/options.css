@@ -1,0 +1,116 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font: 14px/1.5 system-ui, -apple-system, sans-serif;
+  color: #1c2330;
+  background: #f2f4f7;
+}
+main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 28px 20px 80px;
+}
+h1 { margin: 0 0 4px; font-size: 24px; }
+.subtitle { margin: 0 0 24px; color: #5c6470; }
+
+section {
+  background: #fff;
+  border: 1px solid #e3e6ea;
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+h2 { margin: 0 0 12px; font-size: 16px; }
+.optional { font-size: 12px; font-weight: 400; color: #868e96; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 16px;
+}
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #495057;
+}
+label.full { margin-top: 10px; }
+label.checkline { flex-direction: row; align-items: center; font-weight: 400; margin-top: 18px; }
+
+input, select, textarea {
+  font: 13px/1.4 system-ui, sans-serif;
+  padding: 7px 9px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background: #fff;
+  color: #1c2330;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #3b5bdb;
+  box-shadow: 0 0 0 2px rgba(59, 91, 219, 0.15);
+}
+textarea { resize: vertical; }
+
+.hint { font-size: 12px; color: #868e96; margin: 10px 0 0; }
+.hint code { background: #f1f3f5; padding: 1px 4px; border-radius: 4px; }
+
+.repeat-list { display: flex; flex-direction: column; gap: 12px; }
+.repeat-item {
+  position: relative;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 14px;
+  background: #fafbfc;
+}
+.remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  background: none;
+  color: #adb5bd;
+  cursor: pointer;
+  font-size: 13px;
+}
+.remove:hover { color: #c92a2a; }
+.add {
+  margin-top: 10px;
+  border: 1px dashed #adb5bd;
+  background: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  color: #3b5bdb;
+  cursor: pointer;
+  font-size: 13px;
+}
+.add:hover { border-color: #3b5bdb; }
+
+.savebar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 1px solid #e3e6ea;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+}
+.primary {
+  padding: 9px 32px;
+  border: none;
+  border-radius: 8px;
+  background: #3b5bdb;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.primary:hover { background: #364fc7; }
+.saved { color: #2b8a3e; font-weight: 600; }
+.hidden { display: none; }

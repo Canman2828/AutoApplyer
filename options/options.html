@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>AutoApplyer Settings</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <main>
+    <h1>AutoApplyer</h1>
+    <p class="subtitle">Fill this out once — the AI uses it to answer application questions. It never invents information that isn't here.</p>
+
+    <section>
+      <h2>AI Model</h2>
+      <div class="grid">
+        <label>Provider
+          <select id="provider">
+            <option value="anthropic">Anthropic (Claude)</option>
+            <option value="openai">OpenAI</option>
+            <option value="custom">Custom (OpenAI-compatible)</option>
+          </select>
+        </label>
+        <label>API key
+          <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off" />
+        </label>
+        <label>Model
+          <input type="text" id="model" placeholder="claude-opus-4-8" />
+        </label>
+        <label id="baseUrlRow" class="hidden">Base URL
+          <input type="text" id="baseUrl" placeholder="https://openrouter.ai/api/v1" />
+        </label>
+      </div>
+      <p class="hint">Your API key is stored only in this browser (chrome.storage) and sent only to the provider you choose. For Anthropic the model defaults to <code>claude-opus-4-8</code>. "Custom" works with any OpenAI-compatible endpoint (OpenRouter, Ollama, etc.).</p>
+    </section>
+
+    <section>
+      <h2>Workday Sign-in <span class="optional">(optional)</span></h2>
+      <label class="checkline"><input type="checkbox" id="wdEnabled" /> Fill Workday sign-in / account-creation pages automatically</label>
+      <div class="grid" id="wdFields">
+        <label>Workday email
+          <input type="email" id="wdEmail" autocomplete="off" />
+        </label>
+        <label>Workday password
+          <input type="password" id="wdPassword" autocomplete="new-password" />
+        </label>
+        <label class="checkline"><input type="checkbox" id="wdAutoSubmit" /> Also click the sign-in / create-account button for me</label>
+      </div>
+      <p class="hint">Workday requires an account before you can apply. When "Fill this page" runs on a Workday sign-in or create-account page, these credentials are filled in directly. They are stored only in this browser, are <strong>never sent to the AI model</strong>, and are only ever filled on real Workday domains (<code>myworkday.com</code> / <code>myworkdayjobs.com</code>). Note: the password is stored unencrypted in extension storage — use a unique password here, not one you reuse elsewhere. New accounts may still require you to verify your email.</p>
+    </section>
+
+    <section>
+      <h2>Personal Information</h2>
+      <div class="grid">
+        <label>First name <input type="text" name="firstName" /></label>
+        <label>Last name <input type="text" name="lastName" /></label>
+        <label>Email <input type="email" name="email" /></label>
+        <label>Phone <input type="tel" name="phone" /></label>
+        <label>Street address <input type="text" name="street" /></label>
+        <label>City <input type="text" name="city" /></label>
+        <label>State / Province <input type="text" name="state" /></label>
+        <label>ZIP / Postal code <input type="text" name="zip" /></label>
+        <label>Country <input type="text" name="country" /></label>
+      </div>
+    </section>
+
+    <section>
+      <h2>Links</h2>
+      <div class="grid">
+        <label>LinkedIn <input type="url" name="linkedin" placeholder="https://linkedin.com/in/..." /></label>
+        <label>GitHub <input type="url" name="github" /></label>
+        <label>Portfolio / Website <input type="url" name="portfolio" /></label>
+      </div>
+    </section>
+
+    <section>
+      <h2>Education</h2>
+      <div id="educationList" class="repeat-list"></div>
+      <button type="button" class="add" data-add="education">+ Add education</button>
+    </section>
+
+    <section>
+      <h2>Experience</h2>
+      <div id="experienceList" class="repeat-list"></div>
+      <button type="button" class="add" data-add="experience">+ Add experience</button>
+    </section>
+
+    <section>
+      <h2>Skills &amp; Summary</h2>
+      <label class="full">Skills (comma-separated)
+        <textarea name="skills" rows="2" placeholder="Python, JavaScript, SQL, Figma..."></textarea>
+      </label>
+      <label class="full">Short summary about yourself
+        <textarea name="summary" rows="3" placeholder="CS sophomore interested in backend engineering..."></textarea>
+      </label>
+    </section>
+
+    <section>
+      <h2>Work Eligibility &amp; Availability</h2>
+      <div class="grid">
+        <label>Authorized to work in the US?
+          <select name="workAuthorized">
+            <option value=""></option><option>Yes</option><option>No</option>
+          </select>
+        </label>
+        <label>Will you require sponsorship?
+          <select name="needsSponsorship">
+            <option value=""></option><option>Yes</option><option>No</option>
+          </select>
+        </label>
+        <label>18 years or older?
+          <select name="over18">
+            <option value=""></option><option>Yes</option><option>No</option>
+          </select>
+        </label>
+        <label>Earliest start date <input type="date" name="startDate" /></label>
+        <label>Desired pay (optional) <input type="text" name="desiredPay" placeholder="$25/hr" /></label>
+      </div>
+    </section>
+
+    <section>
+      <h2>Voluntary Self-Identification <span class="optional">(optional — leave blank to answer "prefer not to say")</span></h2>
+      <div class="grid">
+        <label>Gender
+          <select name="gender">
+            <option value=""></option><option>Male</option><option>Female</option><option>Non-binary</option><option>Prefer not to say</option>
+          </select>
+        </label>
+        <label>Hispanic or Latino?
+          <select name="hispanic">
+            <option value=""></option><option>Yes</option><option>No</option><option>Prefer not to say</option>
+          </select>
+        </label>
+        <label>Race / Ethnicity <input type="text" name="race" placeholder="e.g. Asian, White, Two or more races" /></label>
+        <label>Veteran status
+          <select name="veteran">
+            <option value=""></option><option>I am not a protected veteran</option><option>I am a protected veteran</option><option>Prefer not to say</option>
+          </select>
+        </label>
+        <label>Disability status
+          <select name="disability">
+            <option value=""></option><option>No, I do not have a disability</option><option>Yes, I have a disability</option><option>Prefer not to say</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section>
+      <h2>Common Questions <span class="optional">(the AI uses these for essay-style answers)</span></h2>
+      <div id="customList" class="repeat-list"></div>
+      <button type="button" class="add" data-add="custom">+ Add question &amp; answer</button>
+    </section>
+
+    <div class="savebar">
+      <button id="save" class="primary">Save</button>
+      <span id="savedMsg" class="saved hidden">Saved ✓</span>
+    </div>
+  </main>
+
+  <template id="tpl-education">
+    <div class="repeat-item">
+      <button type="button" class="remove" title="Remove">✕</button>
+      <div class="grid">
+        <label>School <input type="text" name="school" /></label>
+        <label>Degree <input type="text" name="degree" placeholder="B.S." /></label>
+        <label>Major / Field <input type="text" name="field" /></label>
+        <label>GPA <input type="text" name="gpa" /></label>
+        <label>Start <input type="month" name="start" /></label>
+        <label>End / Expected graduation <input type="month" name="end" /></label>
+      </div>
+    </div>
+  </template>
+
+  <template id="tpl-experience">
+    <div class="repeat-item">
+      <button type="button" class="remove" title="Remove">✕</button>
+      <div class="grid">
+        <label>Company <input type="text" name="company" /></label>
+        <label>Title <input type="text" name="title" /></label>
+        <label>Location <input type="text" name="location" /></label>
+        <label>Start <input type="month" name="start" /></label>
+        <label>End <input type="month" name="end" /></label>
+        <label class="checkline"><input type="checkbox" name="current" /> I currently work here</label>
+      </div>
+      <label class="full">Description
+        <textarea name="description" rows="3" placeholder="What you did and accomplished..."></textarea>
+      </label>
+    </div>
+  </template>
+
+  <template id="tpl-custom">
+    <div class="repeat-item">
+      <button type="button" class="remove" title="Remove">✕</button>
+      <label class="full">Question <input type="text" name="question" placeholder="Why do you want to work here?" /></label>
+      <label class="full">Your answer <textarea name="answer" rows="3"></textarea></label>
+    </div>
+  </template>
+
+  <script src="options.js"></script>
+</body>
+</html>

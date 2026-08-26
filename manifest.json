@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "AutoApplyer",
+  "version": "1.0.0",
+  "description": "Fills internship applications using your saved profile and the AI model of your choice.",
+  "permissions": ["storage", "scripting", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://localhost:8765/*"],
+      "js": ["test-bridge.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "AutoApplyer"
+  },
+  "options_page": "options/options.html"
+}
