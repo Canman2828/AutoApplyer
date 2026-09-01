@@ -114,3 +114,24 @@ textarea { resize: vertical; }
 .primary:hover { background: #364fc7; }
 .saved { color: #2b8a3e; font-weight: 600; }
 .hidden { display: none; }
+
+.resume-info { display: flex; align-items: center; gap: 10px; }
+.resume-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f3f5;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+.add.danger { color: #c92a2a; border-color: #dfb3b3; }
+.add.danger:hover { border-color: #c92a2a; }
+.filepick input[type="file"] { padding: 6px; background: #fafbfc; }
+.resume-actions { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+.primary.small { padding: 7px 16px; font-size: 13px; }
+.primary:disabled { opacity: 0.5; cursor: default; }
+.autofill-status { font-size: 13px; color: #5c6470; }
+.autofill-status.error { color: #c92a2a; }
+.autofill-status.ok { color: #2b8a3e; }

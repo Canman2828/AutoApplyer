@@ -7,7 +7,7 @@ document.getElementById("openOptions").addEventListener("click", () => {
   chrome.runtime.openOptionsPage();
 });
 
-function renderReadiness(profile, settings) {
+function renderReadiness(profile, settings, resume) {
   const checks = [
     { ok: !!profile?.firstName, label: "Profile saved" },
     { ok: !!settings?.apiKey, label: "API key set" },
@@ -15,15 +15,16 @@ function renderReadiness(profile, settings) {
       ok: settings?.provider === "anthropic" || !!settings?.model,
       label: "Model chosen",
     },
+    { ok: !!resume?.base64, label: "Resume uploaded", optional: true },
   ];
   readinessEl.innerHTML = "";
   for (const c of checks) {
     const div = document.createElement("div");
     div.className = `check ${c.ok ? "ok" : "missing"}`;
-    div.textContent = `${c.ok ? "✓" : "✗"} ${c.label}`;
+    div.textContent = `${c.ok ? "✓" : "✗"} ${c.label}${!c.ok && c.optional ? " (optional)" : ""}`;
     readinessEl.appendChild(div);
   }
-  fillBtn.disabled = !checks.every((c) => c.ok);
+  fillBtn.disabled = !checks.every((c) => c.ok || c.optional);
 }
 
 function renderStatus(status) {
@@ -54,8 +55,8 @@ function renderStatus(status) {
 }
 
 async function init() {
-  const { profile, settings } = await chrome.storage.local.get(["profile", "settings"]);
-  renderReadiness(profile, settings);
+  const { profile, settings, resume } = await chrome.storage.local.get(["profile", "settings", "resume"]);
+  renderReadiness(profile, settings, resume);
 
   const { fillStatus } = await chrome.storage.session.get("fillStatus");
   // Only show recent status (last 5 minutes) so stale results don't linger.

@@ -61,6 +61,25 @@
     return "";
   }
 
+  // The question text for a radio group is usually NOT the per-option label
+  // (that's "Yes"/"No"), but text just before the group's container.
+  function radioGroupLabel(group) {
+    let anc = group[0].parentElement;
+    while (anc && !group.every((r) => anc.contains(r))) anc = anc.parentElement;
+    for (let node = anc; node && node !== document.body; node = node.parentElement) {
+      let sib = node.previousElementSibling;
+      for (let hops = 0; sib && hops < 3; hops++) {
+        if (!sib.querySelector("input, select, textarea")) {
+          const t = trim(sib.textContent);
+          if (t) return t;
+        }
+        sib = sib.previousElementSibling;
+      }
+    }
+    const legend = group[0].closest("fieldset")?.querySelector("legend");
+    return legend ? trim(legend.textContent) : "";
+  }
+
   function selectOptions(el) {
     return Array.from(el.options)
       .slice(0, MAX_OPTIONS)
@@ -71,7 +90,7 @@
   function collect() {
     fieldRegistry = new Map();
     const fields = [];
-    const skippedFiles = [];
+    const fileFields = [];
     let n = 0;
     const seenRadioGroups = new Set();
 
@@ -79,16 +98,22 @@
     for (const el of controls) {
       if (fields.length >= MAX_FIELDS) break;
       if (el.disabled || el.readOnly) continue;
-      if (!isVisible(el)) continue;
 
       const tag = el.tagName.toLowerCase();
       const type = (el.type || "text").toLowerCase();
       if (["hidden", "submit", "button", "reset", "image", "password"].includes(type)) continue;
 
+      // File inputs are registered even when invisible — styled uploaders
+      // (Greenhouse, Workday, dropzones) usually hide the real <input>.
       if (type === "file") {
-        skippedFiles.push(labelFor(el) || el.name || "file upload");
+        const id = `q${n++}`;
+        const label = labelFor(el) || el.name || "file upload";
+        fieldRegistry.set(id, { kind: "file", el, label });
+        fileFields.push({ id, label, name: el.name || "", accept: el.accept || "" });
         continue;
       }
+
+      if (!isVisible(el)) continue;
 
       const label = labelFor(el);
 
@@ -105,7 +130,7 @@
         fields.push({
           id,
           tag: "radio-group",
-          label: label || el.name,
+          label: radioGroupLabel(group) || label || el.name,
           required: group.some((r) => r.required),
           value: (group.find((r) => r.checked) || {}).value || "",
           options: group.map((r) => ({ value: r.value, text: trim(labelFor(r)) || r.value })),
@@ -135,7 +160,7 @@
       url: location.href,
       title: document.title,
       fields,
-      skippedFiles,
+      fileFields,
     };
   }
 
@@ -201,6 +226,35 @@
       }
     }
     return { filled, failed };
+  }
+
+  // Attach stored files (e.g. the saved resume) to <input type="file"> fields
+  // collected earlier. items: [{ id, name, mime, base64 }].
+  function attachFiles(items) {
+    const attached = [];
+    const failed = [];
+    for (const { id, name, mime, base64 } of items) {
+      const entry = fieldRegistry.get(id);
+      if (!entry || entry.kind !== "file") {
+        failed.push(id);
+        continue;
+      }
+      try {
+        const bin = atob(base64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        const file = new File([bytes], name, { type: mime });
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        entry.el.files = dt.files;
+        entry.el.dispatchEvent(new Event("input", { bubbles: true }));
+        entry.el.dispatchEvent(new Event("change", { bubbles: true }));
+        attached.push(entry.label || name);
+      } catch {
+        failed.push(id);
+      }
+    }
+    return { attached, failed };
   }
 
   // ---------- Workday sign-in ----------
@@ -285,5 +339,5 @@
     setTimeout(() => div.remove(), 6000);
   }
 
-  window.__AAF__ = { collect, apply, toast, authProbe, fillAuth };
+  window.__AAF__ = { collect, apply, attachFiles, toast, authProbe, fillAuth };
 })();

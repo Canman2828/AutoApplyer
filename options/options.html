@@ -29,8 +29,30 @@
         <label id="baseUrlRow" class="hidden">Base URL
           <input type="text" id="baseUrl" placeholder="https://openrouter.ai/api/v1" />
         </label>
+        <label id="workspaceRow">Workspace ID <span class="optional">(only if your key requires it)</span>
+          <input type="text" id="workspaceId" placeholder="wrkspc_..." autocomplete="off" />
+        </label>
       </div>
       <p class="hint">Your API key is stored only in this browser (chrome.storage) and sent only to the provider you choose. For Anthropic the model defaults to <code>claude-opus-4-8</code>. "Custom" works with any OpenAI-compatible endpoint (OpenRouter, Ollama, etc.).</p>
+    </section>
+
+    <section>
+      <h2>Resume</h2>
+      <div id="resumeEmpty">
+        <label class="filepick">Upload resume (PDF or .txt)
+          <input type="file" id="resumeFile" accept=".pdf,.txt,.md,application/pdf,text/plain" />
+        </label>
+      </div>
+      <div id="resumeInfo" class="resume-info hidden">
+        <span class="resume-chip">📄 <span id="resumeName"></span> <span id="resumeSize" class="optional"></span></span>
+        <button type="button" id="resumeReplace" class="add">Replace</button>
+        <button type="button" id="resumeRemove" class="add danger">Remove</button>
+      </div>
+      <div class="resume-actions">
+        <button type="button" id="autofillBtn" class="primary small">✨ Auto-fill profile from resume</button>
+        <span id="autofillStatus" class="autofill-status"></span>
+      </div>
+      <p class="hint">Your resume is stored only in this browser. It is automatically attached to Resume/CV upload fields when you fill an application, and it's sent along to your AI model so answers are grounded in it. <strong>Auto-fill profile</strong> reads the resume with your chosen AI model (API key required) and pre-fills the sections below — review the results, then click Save.</p>
     </section>
 
     <section>
