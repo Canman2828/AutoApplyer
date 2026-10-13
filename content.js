@@ -61,11 +61,32 @@
     return "";
   }
 
+  // Many ATS builders (Ashby included) render the question as a <label>/<div>
+  // that is a CHILD of the group's shared container, appearing before the
+  // option elements — not a preceding sibling of the container itself. Scan
+  // the container's own children first, stopping once we reach the first
+  // option, and only fall back to climbing ancestors' siblings for markup
+  // that doesn't follow that pattern.
+  function containerQuestionLabel(container, firstOption) {
+    if (!container) return "";
+    for (const child of container.children) {
+      if (child === firstOption || child.contains(firstOption)) break;
+      if (child.querySelector("input, select, textarea")) continue;
+      const t = trim(child.textContent);
+      if (t) return t;
+    }
+    return "";
+  }
+
   // The question text for a radio group is usually NOT the per-option label
   // (that's "Yes"/"No"), but text just before the group's container.
   function radioGroupLabel(group) {
     let anc = group[0].parentElement;
     while (anc && !group.every((r) => anc.contains(r))) anc = anc.parentElement;
+
+    const fromContainer = containerQuestionLabel(anc, group[0]);
+    if (fromContainer) return fromContainer;
+
     for (let node = anc; node && node !== document.body; node = node.parentElement) {
       let sib = node.previousElementSibling;
       for (let hops = 0; sib && hops < 3; hops++) {
@@ -138,6 +159,20 @@
         continue;
       }
 
+      // A "select all that apply" checkbox usually only carries its own
+      // option text (e.g. "Fall 2026") with no shared `name` linking it to
+      // its siblings, so the question itself has to be pulled from the
+      // group's shared container and prepended for context.
+      let effectiveLabel = label;
+      if (type === "checkbox") {
+        const container = el.closest("fieldset") || el.closest('[role="group"]');
+        if (container && container.querySelectorAll('input[type="checkbox"]').length > 1) {
+          const optionWrap = Array.from(container.children).find((c) => c.contains(el));
+          const question = containerQuestionLabel(container, optionWrap);
+          if (question) effectiveLabel = `${question} — ${label}`;
+        }
+      }
+
       const id = `q${n++}`;
       fieldRegistry.set(id, { kind: tag === "select" ? "select" : type === "checkbox" ? "checkbox" : "text", el });
 
@@ -145,7 +180,7 @@
         id,
         tag,
         type,
-        label,
+        label: effectiveLabel,
         name: el.name || "",
         placeholder: el.placeholder || "",
         required: !!el.required,
